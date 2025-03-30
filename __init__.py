@@ -9,6 +9,7 @@ import subprocess
 import re
 import time
 import ctypes
+from utils import set_folder_icon
 
 # Set directory as a global variable
 directory = None
@@ -201,40 +202,20 @@ def process_icon(icon):
 
             run_cmd(f'attrib +h +s "{ini_path}"')  # Set file attributes to hidden and system
             run_cmd(f'attrib +s "{directory}"')  # Set directory as a system folder
-            refresh_explorer(directory)
+            set_folder_icon(directory, icon)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to update desktop.ini: {e}")
     else:
         # Create and write a new desktop.ini file if it does not exist
         try:
             with open(ini_path, 'w', encoding='utf-8') as file:
-                file.write(f'[.ShellClassInfo]\nIconResource={relative_icon_path},0\n')
+                file.write(f'[.ShellClassInfo]\nIconResource={icon},0\n')
                 run_cmd(f'attrib +h +s "{ini_path}"')
                 run_cmd(f'attrib +s "{directory}"')
-                refresh_explorer(directory)
+                set_folder_icon(directory, icon)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to create desktop.ini: {e}")
 
-def refresh_explorer(folder_path):
-    try:
-        # 获取文件夹的父路径和当前名称
-        parent_dir = os.path.dirname(folder_path)
-        original_name = os.path.basename(folder_path)
-
-        # 自动生成一个新的临时名称
-        new_name = original_name + "."
-        new_folder_path = os.path.join(parent_dir, new_name)
-
-        # 重命名文件夹
-        os.rename(folder_path, new_folder_path) # 可根据需求调整时间
-        os.system('ie4uinit.exe -ClearIconCache')
-
-        # 停顿几秒钟模拟操作
-        time.sleep(1.3)
-        ctypes.windll.shell32.SHChangeNotify(0x08000000, 0x0000, None, None)
-
-    except Exception as e:
-        print(f"操作失败: {e}")
 
 # Main application
 def main():

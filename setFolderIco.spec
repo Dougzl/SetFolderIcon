@@ -5,9 +5,8 @@ a = Analysis(
     ['__init__.py'],
     pathex=[],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
-    hookspath=[],
+    datas=[('utils.py', '.')],  # 添加数据文件
+    hiddenimports=['utils'],     # 添加隐藏导入
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
